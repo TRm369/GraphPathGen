@@ -53,9 +53,6 @@ void Graph::calculateDistances(int destID) {
 	toExpand.push(nodes[destID]);
 
 	Node* currNode;
-	Node** loopEnd;
-	Node** outPtr;
-	float* outWeight;
 	while (!toExpand.empty()) {
 		currNode = toExpand.front();
 		toExpand.pop();
@@ -63,20 +60,14 @@ void Graph::calculateDistances(int destID) {
 
 
 		//for (int i = 0; i < currNode->outgoingCount; i++) {
-		outPtr = currNode->outgoing;
-		outWeight = currNode->outgoingWeight;
-		loopEnd = outPtr + currNode->outgoingCount;
-		while (outPtr < loopEnd) {
-			if ((*outPtr)->distance > currNode->distance + *outWeight) {
-				(*outPtr)->distance = currNode->distance + *outWeight;
-				if ((*outPtr)->flags == 0) {
-					toExpand.push(*outPtr);
-					(*outPtr)->flags = 1;
+		for (int i = 0; i < currNode->outgoingCount; i++) {
+			if (currNode->outgoing[i]->distance > currNode->distance + currNode->outgoingWeight[i]) {
+				currNode->outgoing[i]->distance = currNode->distance + currNode->outgoingWeight[i];
+				if (currNode->outgoing[i]->flags == 0) {
+					toExpand.push(currNode->outgoing[i]);
+					(currNode->outgoing[i])->flags = 1;
 				}
 			}
-			//cout << (*outPtr)->ID<<endl;
-			outPtr++;
-			outWeight++;
 		}
 	}
 }
