@@ -49,23 +49,22 @@ bool Graph::addBidirEdge(int ID1, int ID2, float weight) {
 
 void Graph::calculateDistances(int destID) {
 	nodes[destID]->distance = 0.0f;
-	queue<Node*> toExpand;
+	CircQueue<Node*> toExpand(nodeCount);
 	toExpand.push(nodes[destID]);
 
 	Node* currNode;
-	while (!toExpand.empty()) {
-		currNode = toExpand.front();
-		toExpand.pop();
-		currNode->flags = 0;
+	while (toExpand.size() > 0) {
+		currNode = toExpand.pop();
+		currNode->flags = (uint8_t)0;
 
-
-		//for (int i = 0; i < currNode->outgoingCount; i++) {
 		for (int i = 0; i < currNode->outgoingCount; i++) {
-			if (currNode->outgoing[i]->distance > currNode->distance + currNode->outgoingWeight[i]) {
-				currNode->outgoing[i]->distance = currNode->distance + currNode->outgoingWeight[i];
-				if (currNode->outgoing[i]->flags == 0) {
+			Node* other = currNode->outgoing[i];
+			float temp = currNode->distance + currNode->outgoingWeight[i];
+			if (other->distance > temp) {
+				other->distance = temp;
+				if (other->flags == (uint8_t)0) {
 					toExpand.push(currNode->outgoing[i]);
-					(currNode->outgoing[i])->flags = 1;
+					(other)->flags = (uint8_t)1;
 				}
 			}
 		}

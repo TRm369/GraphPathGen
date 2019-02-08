@@ -2,7 +2,7 @@
 
 #include "../stdafx.h"
 #include "Node.h"
-#include <queue>
+#include "CircQueue.h"
 
 class Graph {
 public:
