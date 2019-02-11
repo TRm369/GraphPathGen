@@ -33,7 +33,7 @@
     <ClInclude Include="src\GDIrenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\SquareGDIrenderer.h">
+    <ClInclude Include="src\RectGDIrenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -53,7 +53,7 @@
     <ClCompile Include="src\GDIrenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\SquareGDIrenderer.cpp">
+    <ClCompile Include="src\RectGDIrenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

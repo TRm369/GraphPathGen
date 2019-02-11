@@ -1,14 +1,14 @@
-#include "SquareGDIrenderer.h"
+#include "RectGDIrenderer.h"
 #include <string>
 
 #define FILL_TILE(t, c) g->FillRectangle(&SolidBrush(c), Rect((t % w)*SQR_SIZE + 1, (t / w)*SQR_SIZE + 1, SQR_SIZE - 1, SQR_SIZE - 1))
 
-SquareGDIrenderer::SquareGDIrenderer(int W, int H) : GDIrenderer() {
+RectGDIrenderer::RectGDIrenderer(int W, int H) : GDIrenderer() {
 	w = W;
 	h = H;
 }
 
-void SquareGDIrenderer::createGrid() {
+void RectGDIrenderer::createGrid() {
 	bmp = new Bitmap(w*SQR_SIZE + 1, h*SQR_SIZE + 1, PixelFormat24bppRGB);
 	g = Graphics::FromImage(bmp);
 
@@ -22,7 +22,7 @@ void SquareGDIrenderer::createGrid() {
 	}
 }
 
-void SquareGDIrenderer::addOverlay(Graph& graph) {
+void RectGDIrenderer::addOverlay(Graph& graph) {
 	//Draw origin
 	//FILL_TILE(graph.getOrigin(), Color::Green);
 

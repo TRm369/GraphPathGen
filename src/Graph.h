@@ -34,11 +34,16 @@ public:
 	bool addBidirEdge(int ID1, int ID2, float weight);
 
 	///<summary>
-	///Calculates each node's (shortest) distance to a given distance node
+	///Calculates each node's (shortest) distance to a given destination node
 	///</summary>
 	void calculateDistances(int destID);
 
+	///<summary>
+	///Returns node's (shortest) distance to the destination node
+	///</summary>
 	float getDistance(int nodeID);
+
+	int getDestID();
 
 protected:
 	//Array of pointers to all nodes
@@ -47,4 +52,7 @@ protected:
 
 	//Initialized node count
 	int initdNodes;
+
+	//Graph info
+	int destNodeID = -1;
 };

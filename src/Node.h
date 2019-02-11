@@ -5,6 +5,11 @@
 #define ROAD_EMPTY -1
 #define REALLY_HIGH_NUMBER 1e20f
 
+/*
+Incoming nodes aren't used. At this point I'm not sure if they're going to be needed, but when I implemented Node,
+I decided to inculde them. I'll keep them until I decide if I need them.
+*/
+
 class Node {
 public:
 	Node(uint16_t inCount, uint16_t outCount);

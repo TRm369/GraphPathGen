@@ -8,6 +8,9 @@ Graph::Graph(int NodeCount) {
 
 
 Graph::~Graph() {
+	for (int i = 0; i < initdNodes; i++) {
+		delete nodes[i];
+	}
 	delete[] nodes;
 }
 
@@ -48,6 +51,8 @@ bool Graph::addBidirEdge(int ID1, int ID2, float weight) {
 }
 
 void Graph::calculateDistances(int destID) {
+	destNodeID = destID;
+
 	nodes[destID]->distance = 0.0f;
 	CircQueue<Node*> toExpand(nodeCount);
 	toExpand.push(nodes[destID]);
@@ -76,4 +81,8 @@ float Graph::getDistance(int nodeID) {
 		return -1.0f;
 
 	return nodes[nodeID]->distance;
+}
+
+int Graph::getDestID() {
+	return destNodeID;
 }

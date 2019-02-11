@@ -3,9 +3,9 @@
 
 #define SQR_SIZE 40
 
-class SquareGDIrenderer : public GDIrenderer {
+class RectGDIrenderer : public GDIrenderer {
 public:
-	SquareGDIrenderer(int w, int h);
+	RectGDIrenderer(int w, int h);
 	void createGrid();
 	void addOverlay(Graph& graph);
 	//void drawPath(vector<int>& path, Color color);
