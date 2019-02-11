@@ -3,7 +3,7 @@
 #include "../stdafx.h"
 
 #define ROAD_EMPTY -1
-#define REALLY_HIGH_NUMBER 1e20
+#define REALLY_HIGH_NUMBER 1e20f
 
 class Node {
 public:
