@@ -8,7 +8,7 @@ public:
 	RectGDIrenderer(int w, int h);
 	void createGrid();
 	void addOverlay(Graph& graph);
-	//void drawPath(vector<int>& path, Color color);
+	void drawPath(vector<int>& path, Color color);
 
 protected:
 	int w;

@@ -3,6 +3,8 @@
 #include "../stdafx.h"
 #include "Node.h"
 #include "CircQueue.h"
+#include <vector>
+#include <ctime> //seed for rng
 
 class Graph {
 public:
@@ -34,16 +36,23 @@ public:
 	bool addBidirEdge(int ID1, int ID2, float weight);
 
 	///<summary>
-	///Calculates each node's (shortest) distance to a given destination node
+	///Sets the destination node - node at which the generated path should end.
 	///</summary>
-	void calculateDistances(int destID);
+	bool setDestID(int ID);
+	int getDestID();
 
 	///<summary>
 	///Returns node's (shortest) distance to the destination node
 	///</summary>
 	float getDistance(int nodeID);
 
-	int getDestID();
+	///<summary>
+	///Returns a randomly generated path from a given node to destination node.
+	///</summary>
+	///<remarks>
+	///Returns a vector. First element is the starting node, last is the destination node.
+	///</remarks>
+	vector<int> genRandomPath(int startID, float maxLength);
 
 protected:
 	//Array of pointers to all nodes
@@ -54,5 +63,19 @@ protected:
 	int initdNodes;
 
 	//Graph info
-	int destNodeID = -1;
+	int destID = -1;
+	int maxOutEdges = 0; //The maximum number of edges going out of a node
+
+	//Path generation helper funcs
+	///<summary>
+	///Calculates each node's (shortest) distance to the destination node
+	///</summary>
+	void calculateDistances();
+
+	///<summary>
+	///Defines the rules for valid road candidates.
+	///</summary>
+	bool isRoadCandidate(Node* node, float maxDist);
+
+	void resetDistances();
 };

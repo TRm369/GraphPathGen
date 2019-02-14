@@ -23,11 +23,8 @@ void RectGDIrenderer::createGrid() {
 }
 
 void RectGDIrenderer::addOverlay(Graph& graph) {
-	//Draw origin
-	//FILL_TILE(graph.getOrigin(), Color::Green);
-
 	//Draw destination
-	//FILL_TILE(graph.getDest(), Color::DarkRed);
+	FILL_TILE(graph.getDestID(), Color::DarkRed);
 
 	//Draw distances
 	for (int x = 0; x < w; x++) {
@@ -38,8 +35,8 @@ void RectGDIrenderer::addOverlay(Graph& graph) {
 	}
 }
 
-/*void SquareGDIrenderer::drawPath(vector<int>& path, Color color) {
+void RectGDIrenderer::drawPath(vector<int>& path, Color color) {
 	for (int tile : path) {
 		FILL_TILE(tile, color);
 	}
-}*/
+}

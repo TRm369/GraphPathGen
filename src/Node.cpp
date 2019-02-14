@@ -1,6 +1,6 @@
 #include "Node.h"
 
-Node::Node(uint16_t inCount, uint16_t outCount) {
+Node::Node(edgeCount_t inCount, edgeCount_t outCount) {
 	incoming = new Node*[inCount];
 	incomingWeight = new float[inCount];
 	outgoing = new Node*[outCount];
