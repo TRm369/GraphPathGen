@@ -15,6 +15,8 @@ Node::Node(edgeCount_t inCount, edgeCount_t outCount) {
 	}
 
 	roadID = ROAD_EMPTY;
+	assignedOnIter = 0;
+	assignedOnIter -= 1; //Overflow to the max val
 }
 
 Node::~Node() {
@@ -39,4 +41,16 @@ void Node::addOutgoing(Node* other, float weight) {
 	outgoing[outgoingCount] = other;
 	outgoingWeight[outgoingCount] = weight;
 	outgoingCount++;
+}
+
+void Node::setRoadID(roadID_t id, iterCounter_t iter) {
+	roadID = id;
+	if (iter < assignedOnIter)
+		assignedOnIter = iter;
+}
+
+void Node::resetRoadID() {
+	roadID = ROAD_EMPTY;
+	assignedOnIter = 0;
+	assignedOnIter -= 1; //Overflow to the max val
 }

@@ -3,7 +3,7 @@
 #include "../stdafx.h"
 #include "Node.h"
 #include "CircQueue.h"
-#include <vector>
+#include "Log.h"
 #include <ctime> //seed for rng
 
 class Graph {
@@ -17,7 +17,7 @@ public:
 	///<returns>
 	///Returns new node's ID
 	///</returns>
-	int initNewNode(uint16_t edgeInMaxCount, uint16_t edgeOutMaxCount);
+	int initNewNode(edgeCount_t edgeInMaxCount, edgeCount_t edgeOutMaxCount);
 
 	///<summary>
 	///Creates a one-directional edge between two nodes

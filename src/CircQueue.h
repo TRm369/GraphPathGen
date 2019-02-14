@@ -11,6 +11,7 @@ template <typename T>
 class CircQueue {
 public:
 	CircQueue(int Length);
+	~CircQueue();
 	void push(T val);
 	T pop();
 	int size();
@@ -30,6 +31,11 @@ inline CircQueue<T>::CircQueue(int Length) {
 	circ_last = circ + length-1;
 	front_ptr = circ;
 	back_ptr = circ-1;
+}
+
+template<typename T>
+inline CircQueue<T>::~CircQueue() {
+	delete[] circ;
 }
 
 template<typename T>

@@ -14,7 +14,7 @@ Graph::~Graph() {
 	delete[] nodes;
 }
 
-int Graph::initNewNode(uint16_t edgeInMaxCount, uint16_t edgeOutMaxCount) {
+int Graph::initNewNode(edgeCount_t edgeInMaxCount, edgeCount_t edgeOutMaxCount) {
 	if (initdNodes == nodeCount)
 		return -1;
 
@@ -133,7 +133,9 @@ vector<int> Graph::genRandomPath(int startID, float maxLength) {
 
 	calculateDistances();
 
-	currNode->roadID = roadID;
+	//Setup and gen loop
+	iterCounter_t iterCounter = 0;
+	currNode->setRoadID(roadID, iterCounter);
 	while (currNode->ID != destID) {
 		//Check neighbors for valid road candidates
 		validNodesCount = 0;
@@ -150,8 +152,32 @@ vector<int> Graph::genRandomPath(int startID, float maxLength) {
 				//Path doesn't exist
 				return vector<int>();
 			} else {
-				//TODO: backtracking
-				return path;
+				////Backtrack
+				//Stepback
+				Node* badNode = nodes[path.back()];
+				path.pop_back();
+				currNode = nodes[path.back()];
+				iterCounter--;
+
+				//Revalidate the nodes around the last node (only the ones which were invalidated last step)
+				for (int i = 0; i < currNode->outgoingCount; i++) {
+					if (currNode->outgoing[i] == nullptr)
+						break;
+					if (currNode->outgoing[i]->assignedOnIter == iterCounter) {
+						currNode->outgoing[i]->resetRoadID();
+					}
+				}
+
+				//Invalidate the node from which we're backtracking (because it doesn't lead to any valid path)
+				//Using iterCounter-1 to allow further backtracking
+				badNode->setRoadID(ROAD_INVALID, iterCounter - 1);
+
+				//Recalculate the distances
+				resetDistances();
+				calculateDistances();
+
+				//Rinse and repeat
+				continue;
 			}
 		}
 
@@ -159,7 +185,7 @@ vector<int> Graph::genRandomPath(int startID, float maxLength) {
 		for (int i = 0; i < currNode->outgoingCount; i++) {
 			if (currNode->outgoing[i] == nullptr)
 				break;
-			currNode->outgoing[i]->roadID = ROAD_INVALID;
+			currNode->outgoing[i]->setRoadID(ROAD_INVALID, iterCounter);
 		}
 
 		////Pick one valid candidate at random and make a step
@@ -173,12 +199,15 @@ vector<int> Graph::genRandomPath(int startID, float maxLength) {
 		}
 		//Make a step
 		currNode = validNodes[next];
+		//assignedOnIter was set during the invalidation, no need to do it again so directly setting roadID
 		currNode->roadID = roadID;
 		path.push_back(currNode->ID);
 
 		//Recalculate the distances
 		resetDistances();
 		calculateDistances();
+
+		iterCounter++;
 	}
 
 	return path;
