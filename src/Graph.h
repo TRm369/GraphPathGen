@@ -59,6 +59,8 @@ public:
 	///</summary>
 	void resetGraph();
 
+	void setOnStepCB(void(*CB)(vector<int>));
+
 protected:
 	//Array of pointers to all nodes
 	Node** nodes;
@@ -70,6 +72,8 @@ protected:
 	//Graph info
 	int destID = -1;
 	int maxOutEdges = 0; //The maximum number of edges going out of a node
+
+	void (*onStep)(vector<int>);
 
 	//Path generation helper funcs
 	///<summary>

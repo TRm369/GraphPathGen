@@ -6,12 +6,12 @@
 RectGDIrenderer::RectGDIrenderer(int W, int H) : GDIrenderer() {
 	w = W;
 	h = H;
+
+	bmp = new Bitmap(w*SQR_SIZE + 1, h*SQR_SIZE + 1, PixelFormat24bppRGB);
+	g = Graphics::FromImage(bmp);
 }
 
 void RectGDIrenderer::createGrid() {
-	bmp = new Bitmap(w*SQR_SIZE + 1, h*SQR_SIZE + 1, PixelFormat24bppRGB);
-	g = Graphics::FromImage(bmp);
-
 	//Draw grid
 	g->Clear(Color::Black);
 	for (int x = 0; x <= w; x++) {

@@ -137,6 +137,12 @@ vector<int> Graph::genRandomPath(int startID, float maxLength) {
 	iterCounter_t iterCounter = 0;
 	currNode->setRoadID(roadID, iterCounter);
 	while (currNode->ID != destID) {
+		//Start by calling onStep
+		if (onStep != nullptr) {
+			//passing a copy of path, so that it can't be modified
+			onStep(path);
+		}
+
 		//Check neighbors for valid road candidates
 		validNodesCount = 0;
 		for (int i = 0; i < currNode->outgoingCount; i++) {
@@ -221,6 +227,10 @@ void Graph::resetGraph() {
 		nodes[i]->assignedOnIter -= 1; //Overflow to the max val
 		nodes[i]->flags = 0;
 	}
+}
+
+void Graph::setOnStepCB(void(*CB)(vector<int>)) {
+	onStep = CB;
 }
 
 bool Graph::setDestID(int ID) {
