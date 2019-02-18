@@ -54,6 +54,11 @@ public:
 	///</remarks>
 	vector<int> genRandomPath(int startID, float maxLength);
 
+	///<summary>
+	///Clears all calculated values and assigned roads.
+	///</summary>
+	void resetGraph();
+
 protected:
 	//Array of pointers to all nodes
 	Node** nodes;

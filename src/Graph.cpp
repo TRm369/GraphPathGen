@@ -213,6 +213,16 @@ vector<int> Graph::genRandomPath(int startID, float maxLength) {
 	return path;
 }
 
+void Graph::resetGraph() {
+	for (int i = 0; i < initdNodes; i++) {
+		nodes[i]->distance = REALLY_HIGH_NUMBER;
+		nodes[i]->roadID = ROAD_EMPTY;
+		nodes[i]->assignedOnIter = 0;
+		nodes[i]->assignedOnIter -= 1; //Overflow to the max val
+		nodes[i]->flags = 0;
+	}
+}
+
 bool Graph::setDestID(int ID) {
 	if (ID < 0 || ID >= initdNodes)
 		return false;
