@@ -29,8 +29,10 @@ void RectGDIrenderer::addOverlay(Graph& graph) {
 	//Draw distances
 	for (int x = 0; x < w; x++) {
 		for (int y = 0; y < h; y++) {
-			g->DrawString(to_wstring(graph.getDistance(y*w + x)).c_str(), 4, font, PointF(x*SQR_SIZE + 5, y*SQR_SIZE + 10), brushWhite);
-			//g->DrawString(to_wstring(graph.getNodeRoadID(y*w + x)).c_str(), -1, font, PointF(x*SQR_SIZE + 5, y*SQR_SIZE + 10), brushWhite);
+			float dist = graph.getDistance(y*w + x);
+			g->DrawString(
+				dist == -2.0f ? L"?" : to_wstring(dist).c_str(),
+				4, font, PointF(x*SQR_SIZE + 5, y*SQR_SIZE + 10), brushWhite);
 		}
 	}
 }

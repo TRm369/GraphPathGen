@@ -42,7 +42,7 @@ public:
 	int getDestID();
 
 	///<summary>
-	///Returns node's (shortest) distance to the destination node
+	///Returns node's (shortest) distance to the destination node, -1 for invalid nodes, -2 for invaldated distances
 	///</summary>
 	float getDistance(int nodeID);
 
@@ -87,4 +87,14 @@ protected:
 	bool isRoadCandidate(Node* node, float maxDist);
 
 	void resetDistances();
+
+	///<summary>
+	///Sets the invalidated flag for nodes whose distance may not be valid anymore
+	///</summary>
+	///<param name="threshold">
+	///All nodes with distance greater or equal to this value will have their distances invalidated.
+	///</param>
+	void invalidateNodes(float threshold);
+
+	void updateDistance(Node* node);
 };

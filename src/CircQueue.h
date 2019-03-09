@@ -14,6 +14,7 @@ public:
 	~CircQueue();
 	void push(T val);
 	T pop();
+	T peek();
 	int size();
 
 protected:
@@ -52,6 +53,11 @@ inline T CircQueue<T>::pop() {
 		front_ptr = circ;
 
 	return *(front_ptr++);
+}
+
+template<typename T>
+inline T CircQueue<T>::peek() {
+	return *front_ptr;
 }
 
 template<typename T>

@@ -34,7 +34,7 @@ void printDistances(int a, Graph& g) {
 	}
 }
 
-#define SIZE 50
+#define SIZE 30
 
 Graph g(SIZE*SIZE);
 RectGDIrenderer r(SIZE, SIZE);

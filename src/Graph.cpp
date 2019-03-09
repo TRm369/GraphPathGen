@@ -26,7 +26,7 @@ int Graph::initNewNode(edgeCount_t edgeInMaxCount, edgeCount_t edgeOutMaxCount) 
 }
 
 bool Graph::addEdge(int IDsrc, int IDdest, float weight) {
-	if (IDsrc >= initdNodes || IDdest >= initdNodes || weight < 0.0f)
+	if (IDsrc >= initdNodes || IDdest >= initdNodes || weight <= 0.0f || IDsrc == IDdest)
 		return false;
 
 	nodes[IDsrc]->addOutgoing(nodes[IDdest], weight);
@@ -38,7 +38,7 @@ bool Graph::addEdge(int IDsrc, int IDdest, float weight) {
 }
 
 bool Graph::addBidirEdge(int ID1, int ID2, float weight) {
-	if (ID1 >= initdNodes || ID2 >= initdNodes || weight < 0.0f)
+	if (ID1 >= initdNodes || ID2 >= initdNodes || weight <= 0.0f || ID1 == ID2)
 		return false;
 
 	//One way
@@ -75,9 +75,9 @@ void Graph::calculateDistances() {
 			float temp = currNode->distance + currNode->outgoingWeight[i];
 			if (other->distance > temp) {
 				other->distance = temp;
-				if (other->flags == (uint8_t)0) {
+				if ((other->flags & FLAG_QUEUED) == (uint8_t)0) {
 					toExpand.push(currNode->outgoing[i]);
-					(other)->flags = (uint8_t)1;
+					(other)->flags |= (uint8_t)FLAG_QUEUED;
 				}
 			}
 		}
@@ -87,6 +87,9 @@ void Graph::calculateDistances() {
 float Graph::getDistance(int nodeID) {
 	if (nodeID >= initdNodes)
 		return -1.0f;
+
+	if (nodes[nodeID]->flags & FLAG_DIST_INVALID)
+		return -2.0f;
 
 	return nodes[nodeID]->distance;
 }
@@ -114,6 +117,86 @@ void Graph::resetDistances() {
 	}
 }
 
+void Graph::invalidateNodes(float threshold) {
+	for (int i = 0; i < initdNodes; i++) {
+		if (nodes[i]->distance >= threshold) {
+			nodes[i]->flags |= FLAG_DIST_INVALID;
+		}
+	}
+}
+
+/* updateDistance
+TODO: Better Description
+Wierd A*
+*/
+void Graph::updateDistance(Node* node) {
+	//Reset node flags
+	for (int i = 0; i < initdNodes; i++) {
+		nodes[i]->flags &= ~FLAG_QUEUED;
+	}
+
+	//List of nodes to expand and their distances to the node whose distance is being calculated
+	vector<pair<Node*, float>> toExpand{pair<Node*, float>(node, 0.0f)};
+	node->flags |= FLAG_QUEUED;
+
+	float bestPathLength = REALLY_HIGH_NUMBER;
+	vector<pair<Node*, float>> bestPath;
+
+	float lowestHeuristic = REALLY_HIGH_NUMBER;
+	int lowestHeuristicIndex = -1;
+
+	while (toExpand.size() > 0) {
+		pair<Node*, float> current = toExpand.back();
+
+		//If this node has valid distance, end this branch of DFS
+		if ((current.first->flags & FLAG_DIST_INVALID) == false) {
+			if (current.second + current.first->distance < bestPathLength) {
+				bestPathLength = current.second + current.first->distance;
+				bestPath = toExpand;
+				continue;
+			}
+		}
+
+		//Find neighbor with lowest heuristic
+		lowestHeuristicIndex = -1;
+		for (int i = 0; i < current.first->outgoingCount; i++) {
+			if (current.first->outgoing[i] == nullptr)
+				break;
+			
+			//Here we also disallow going through already placed roads
+			if (((current.first->outgoing[i]->flags & FLAG_QUEUED) == 0) && current.first->outgoing[i]->roadID == ROAD_EMPTY) {
+				if (current.first->outgoing[i]->distance < lowestHeuristic) {
+					lowestHeuristic = current.first->outgoing[i]->distance;
+					lowestHeuristicIndex = i;
+				}
+			}
+		}
+
+		//Remove this node from the toExpand list if there's nowhere to go from here
+		if (lowestHeuristicIndex == -1) {
+			toExpand.pop_back();
+			continue;
+		}
+
+		//If the neighbor's heuristic (lower or equal to the actual distance) + distance to it is greater than the best path's,
+		//it is unnecessary to expand it. All other neighbors will also have this sum greater, so this node isn't in a better path.
+		if (current.first->outgoing[lowestHeuristicIndex]->distance + current.first->outgoingWeight[lowestHeuristicIndex] + current.second > bestPathLength) {
+			toExpand.pop_back();
+			continue;
+		}
+
+		//Expand the neighbor
+		toExpand.push_back(pair<Node*, float>(current.first->outgoing[lowestHeuristicIndex], current.second + current.first->outgoingWeight[lowestHeuristicIndex]));
+		current.first->outgoing[lowestHeuristicIndex]->flags |= FLAG_QUEUED;
+	}
+
+	// Update the distances along the best path
+	for (int i = 0; i < bestPath.size(); i++) {
+		bestPath[i].first->distance = bestPathLength - bestPath[i].second;
+		bestPath[i].first->flags &= ~FLAG_DIST_INVALID;
+	}
+}
+
 vector<int> Graph::genRandomPath(int startID, float maxLength) {
 	if (startID < 0 || startID >= initdNodes)
 		return vector<int>();
@@ -137,19 +220,23 @@ vector<int> Graph::genRandomPath(int startID, float maxLength) {
 	iterCounter_t iterCounter = 0;
 	currNode->setRoadID(roadID, iterCounter);
 	while (currNode->ID != destID) {
-		//Start by calling onStep
-		if (onStep != nullptr) {
-			//passing a copy of path, so that it can't be modified
-			onStep(path);
-		}
-
 		//Check neighbors for valid road candidates
 		validNodesCount = 0;
 		for (int i = 0; i < currNode->outgoingCount; i++) {
 			if (currNode->outgoing[i] == nullptr)
 				break;
+			if (currNode->outgoing[i]->flags & FLAG_DIST_INVALID) {
+				updateDistance(currNode->outgoing[i]);
+			}
 			if (isRoadCandidate(currNode->outgoing[i], lengthLeft-currNode->outgoingWeight[i]))
 				validNodes[validNodesCount++] = currNode->outgoing[i];
+		}
+
+		//Call onStep
+		//It is called here to first let distances of neighboring nodes be recalculated
+		if (onStep != nullptr) {
+			//passing a copy of path, so that it can't be modified
+			onStep(path);
 		}
 
 		//Handle dead ends
@@ -178,6 +265,7 @@ vector<int> Graph::genRandomPath(int startID, float maxLength) {
 				//Using iterCounter-1 to allow further backtracking
 				badNode->setRoadID(ROAD_INVALID, iterCounter - 1);
 
+				//TODO: OPTIMIZE HERE
 				//Recalculate the distances
 				resetDistances();
 				calculateDistances();
@@ -209,12 +297,19 @@ vector<int> Graph::genRandomPath(int startID, float maxLength) {
 		currNode->roadID = roadID;
 		path.push_back(currNode->ID);
 
+		//HERE
+		//New shit
+		invalidateNodes(currNode->distance);
+
+		//Old shit
 		//Recalculate the distances
-		resetDistances();
-		calculateDistances();
+		//resetDistances();
+		//calculateDistances();
 
 		iterCounter++;
 	}
+
+	delete[] validNodes;
 
 	return path;
 }
