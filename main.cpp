@@ -34,7 +34,7 @@ void printDistances(int a, Graph& g) {
 	}
 }
 
-#define SIZE 30
+#define SIZE 200
 
 Graph g(SIZE*SIZE);
 RectGDIrenderer r(SIZE, SIZE);
@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
 	createSquare(SIZE,g);
 	
 	g.setDestID(0);
-	g.setOnStepCB(&onStep);
+	//g.setOnStepCB(&onStep);
 	vector<int> path;
 	int iters = 1;
 	clock_t total = 0;
@@ -68,12 +68,11 @@ int main(int argc, char** argv) {
 	}
 	
 	cout << double(total) / CLOCKS_PER_SEC / iters * 1000 << " ms per iteration" << endl;
-	//printDistances(SIZE, g);
-	//RectGDIrenderer r(SIZE, SIZE);
-	//r.createGrid();
-	//r.drawPath(path, Color::Yellow);
-	//r.addOverlay(g);
-	//r.saveImage(L"D:\\OUT.png");
+	RectGDIrenderer r(SIZE, SIZE);
+	r.createGrid();
+	r.drawPath(path, Color::Yellow);
+	r.addOverlay(g);
+	r.saveImage(L"D:\\OUT.png");
 	cin.ignore();
 	return 0;
 }

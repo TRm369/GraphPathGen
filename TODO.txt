@@ -1,0 +1,1 @@
+Graph::updateDistance : Instead of constantly allocating and deallocating memory in FILOcontainer, use the same block of memory between calls, on bestPaht overwrite - ~10 % of CPU time

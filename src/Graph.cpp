@@ -1,11 +1,12 @@
 #include "Graph.h"
+#include "CircQueue.h"
+#include "FILOcontainer.h"
 
 Graph::Graph(int NodeCount) {
 	nodes = new Node*[NodeCount];
 	nodeCount = NodeCount;
 	initdNodes = 0;
 }
-
 
 Graph::~Graph() {
 	for (int i = 0; i < initdNodes; i++) {
@@ -126,8 +127,10 @@ void Graph::invalidateNodes(float threshold) {
 }
 
 /* updateDistance
-TODO: Better Description
-Wierd A*
+Recalculates the distance of a node to the destination node.
+Basically an A* with a few tweeks:
+Branch ends with any node with valid distance which is then added to the distance of the nodes in the branch
+Node objects themselves are used to store some of the information regarding search progress (like whether the node has been qequed)
 */
 void Graph::updateDistance(Node* node) {
 	//Reset node flags
@@ -136,11 +139,12 @@ void Graph::updateDistance(Node* node) {
 	}
 
 	//List of nodes to expand and their distances to the node whose distance is being calculated
-	vector<pair<Node*, float>> toExpand{pair<Node*, float>(node, 0.0f)};
+	FILOcontainer<pair<Node*, float>> toExpand(nodeCount);
+	toExpand.push_back(pair<Node*, float>(node, 0.0f));
 	node->flags |= FLAG_QUEUED;
 
 	float bestPathLength = REALLY_HIGH_NUMBER;
-	vector<pair<Node*, float>> bestPath;
+	FILOcontainer<pair<Node*, float>> bestPath(nodeCount); //TODO: Mem optimalization?
 
 	float lowestHeuristic = REALLY_HIGH_NUMBER;
 	int lowestHeuristicIndex = -1;
@@ -152,7 +156,7 @@ void Graph::updateDistance(Node* node) {
 		if ((current.first->flags & FLAG_DIST_INVALID) == false) {
 			if (current.second + current.first->distance < bestPathLength) {
 				bestPathLength = current.second + current.first->distance;
-				bestPath = toExpand;
+				bestPath.copyFrom(toExpand);
 				continue;
 			}
 		}
@@ -297,14 +301,7 @@ vector<int> Graph::genRandomPath(int startID, float maxLength) {
 		currNode->roadID = roadID;
 		path.push_back(currNode->ID);
 
-		//HERE
-		//New shit
 		invalidateNodes(currNode->distance);
-
-		//Old shit
-		//Recalculate the distances
-		//resetDistances();
-		//calculateDistances();
 
 		iterCounter++;
 	}

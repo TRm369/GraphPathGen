@@ -5,7 +5,7 @@ Crude queue based on a circular buffer
 It's missing some important checks (eg size > 0 on pop),
 but the external code should guarantee those won't happen.
 And the whole purpose of this was to make it FAST,
-so I'm omiting redundant checks
+so I'm omiting "redundant" checks
 */
 template <typename T>
 class CircQueue {

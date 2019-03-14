@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="FILOcontainer.h" />
     <ClInclude Include="src\CircQueue.h" />
     <ClInclude Include="src\GDIrenderer.h" />
     <ClInclude Include="src\Graph.h" />

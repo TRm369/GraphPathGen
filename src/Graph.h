@@ -2,7 +2,6 @@
 
 #include "../stdafx.h"
 #include "Node.h"
-#include "CircQueue.h"
 #include "Log.h"
 #include <ctime> //seed for rng
 
@@ -96,5 +95,8 @@ protected:
 	///</param>
 	void invalidateNodes(float threshold);
 
+	///<summary>
+	///Recalculates the distance of a node
+	///</summary>
 	void updateDistance(Node* node);
 };
