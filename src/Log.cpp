@@ -1,4 +1,5 @@
 #include "Log.h"
+#include <string>
 
 #define CHECK_INSTANCE if (instance == nullptr) defaultCreate();
 

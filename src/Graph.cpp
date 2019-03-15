@@ -1,6 +1,8 @@
 #include "Graph.h"
 #include "CircQueue.h"
 #include "FILOcontainer.h"
+#include "Log.h"
+#include <ctime> //seed for rng
 
 Graph::Graph(int NodeCount) {
 	nodes = new Node*[NodeCount];

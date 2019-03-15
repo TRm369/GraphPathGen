@@ -150,6 +150,7 @@
     <ClInclude Include="FILOcontainer.h" />
     <ClInclude Include="src\CircQueue.h" />
     <ClInclude Include="src\GDIrenderer.h" />
+    <ClInclude Include="src\GPGsettings.h" />
     <ClInclude Include="src\Graph.h" />
     <ClInclude Include="src\Log.h" />
     <ClInclude Include="src\Node.h" />

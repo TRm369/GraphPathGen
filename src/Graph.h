@@ -2,8 +2,6 @@
 
 #include "../stdafx.h"
 #include "Node.h"
-#include "Log.h"
-#include <ctime> //seed for rng
 
 class Graph {
 public:

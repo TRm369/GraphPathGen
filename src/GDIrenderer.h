@@ -1,7 +1,6 @@
 #pragma once
 #include <objidl.h>
 #include <gdiplus.h>
-#include "Graph.h"
 
 #pragma comment (lib,"Gdiplus.lib")
 using namespace Gdiplus;
@@ -12,15 +11,18 @@ public:
 	~GDIrenderer();
 
 	void saveImage(const WCHAR* file);
+
 protected:
 	Bitmap* bmp;
 	Graphics* g;
-
-	ULONG_PTR gdiplusToken;
-	CLSID pngClsid;
+	
 	Pen* penWhite;
 	Brush* brushWhite;
 	Font* font;
+
+private:
+	CLSID pngClsid;
+	ULONG_PTR gdiplusToken;
 
 	static int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
 };
