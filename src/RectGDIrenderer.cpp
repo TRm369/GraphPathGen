@@ -24,7 +24,7 @@ void RectGDIrenderer::createGrid() {
 
 void RectGDIrenderer::addOverlay(Graph& graph) {
 	//Draw destination
-	FILL_TILE(graph.getDestID(), Color::DarkRed);
+	//FILL_TILE(graph.getDestID(), Color::DarkRed);
 
 	//Draw distances
 	for (int x = 0; x < w; x++) {

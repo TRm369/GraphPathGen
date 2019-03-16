@@ -39,10 +39,13 @@
     <ClInclude Include="src\Log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FILOcontainer.h">
+    <ClInclude Include="src\GPGsettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\GPGsettings.h">
+    <ClInclude Include="src\PathGen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FILOcontainer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -66,6 +69,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PathGen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

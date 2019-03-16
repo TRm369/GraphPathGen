@@ -1,9 +1,10 @@
 // GraphPathGenv1.2.cpp : Defines the entry point for the console application.
 #include "stdafx.h"
-#include "src/Graph.h"
+#include "src/PathGen.h"
 #include "src/RectGDIrenderer.h"
 #include <iostream>
 #include <ctime>
+#include "src/Log.h"
 
 #define COORD_TO_ID(x,y,a) (a)*(y)+(x)
 
@@ -53,26 +54,34 @@ void onStep(vector<int> path) {
 int main(int argc, char** argv) {
 	//Log::createLogFile("log.log", false);
 	createSquare(SIZE,g);
+
+	PathGen pg(g);
+	pg.setDestID(0);
 	
-	g.setDestID(0);
 	//g.setOnStepCB(&onStep);
 	vector<int> path;
-	int iters = 1;
+	int iters = 5;
 	clock_t total = 0;
+	clock_t thisRun;
 	for (int i = 0; i < iters; i++) {
 		clock_t begin = clock();
-		path = g.genRandomPath(SIZE*SIZE-1, SIZE*SIZE/5);
+		path = pg.genRandomPath(SIZE*SIZE-1, SIZE*SIZE/5);
 		clock_t end = clock();
-		total += end - begin;
+		thisRun = end - begin;
+		total += thisRun;
+		Log::logFloat(thisRun);
 		g.resetGraph();
+		cout << i << endl;
 	}
 	
 	cout << double(total) / CLOCKS_PER_SEC / iters * 1000 << " ms per iteration" << endl;
-	RectGDIrenderer r(SIZE, SIZE);
+	Log::logString("Average time per iteration (ms):");
+	Log::logFloat(float(total) / CLOCKS_PER_SEC / iters * 1000);
+	/*RectGDIrenderer r(SIZE, SIZE);
 	r.createGrid();
 	r.drawPath(path, Color::Yellow);
 	r.addOverlay(g);
 	r.saveImage(L"D:\\OUT.png");
-	cin.ignore();
+	cin.ignore();*/
 	return 0;
 }
