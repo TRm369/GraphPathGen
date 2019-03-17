@@ -5,6 +5,9 @@
 #define ROAD_EMPTY -1
 #define ROAD_INVALID 0
 
+//Type used for flags, unsigned integer type
+typedef uint8_t flags_t;
+
 /*Flags bit table
 BIT | DESCRIPTION
 0   | Queued (Distance calculation)
@@ -16,8 +19,8 @@ BIT | DESCRIPTION
 6   |
 7   |
 */
-#define FLAG_QUEUED (uint8_t)1
-#define FLAG_DIST_INVALID (uint8_t)2
+#define FLAG_QUEUED (flags_t)1
+#define FLAG_DIST_INVALID (flags_t)2
 //#define FLAG_BIT_2 4
 //#define FLAG_BIT_3 8
 //#define FLAG_BIT_4 16
@@ -36,7 +39,7 @@ public:
 	//Iteration on which the roadID was assigned. Used to undo steps.
 	iterCounter_t assignedOnIter;
 	//Flags
-	uint8_t flags = 0;
+	flags_t flags = 0;
 
 	float distance = REALLY_HIGH_NUMBER;
 	edgeCount_t incomingCount = 0;

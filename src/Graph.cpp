@@ -19,8 +19,8 @@ int Graph::initNewNode(edgeCount_t edgeInMaxCount, edgeCount_t edgeOutMaxCount) 
 
 	nodes[initdNodes] = new Node(edgeInMaxCount, edgeOutMaxCount);
 	nodes[initdNodes]->ID = initdNodes;
-	if (maxOutEdges < edgeOutMaxCount)
-		maxOutEdges = edgeOutMaxCount;
+	if (_maxOutEdges < edgeOutMaxCount)
+		_maxOutEdges = edgeOutMaxCount;
 	return initdNodes++;
 }
 
@@ -62,6 +62,10 @@ float Graph::getDistance(int nodeID) {
 	return nodes[nodeID]->distance;
 }
 
+int Graph::maxOutEdges() {
+	return _maxOutEdges;
+}
+
 void Graph::resetGraph() {
 	for (int i = 0; i < initdNodes; i++) {
 		nodes[i]->distance = REALLY_HIGH_NUMBER;
@@ -70,4 +74,43 @@ void Graph::resetGraph() {
 		nodes[i]->assignedOnIter -= 1; //Overflow to the max val
 		nodes[i]->flags = 0;
 	}
+}
+
+void Graph::resetDistances() {
+	for (int i = 0; i < initdNodes; i++) {
+		nodes[i]->distance = REALLY_HIGH_NUMBER;
+	}
+}
+
+void Graph::invalidateNodes(float distThres) {
+	for (int i = 0; i < initdNodes; i++) {
+		if (nodes[i]->distance >= distThres) {
+			nodes[i]->flags |= FLAG_DIST_INVALID;
+		}
+	}
+}
+
+void Graph::setFlags(flags_t mask) {
+	for (int i = 0; i < initdNodes; i++) {
+		nodes[i]->flags |= mask;
+	}
+}
+
+void Graph::clearFlags(flags_t mask) {
+	flags_t invMask = ~mask;
+	for (int i = 0; i < initdNodes; i++) {
+		nodes[i]->flags &= invMask;
+	}
+}
+
+int Graph::size() {
+	return initdNodes;
+}
+
+int Graph::maxSize() {
+	return nodeCount;
+}
+
+Node* Graph::operator[](int index) {
+	return nodes[index];
 }

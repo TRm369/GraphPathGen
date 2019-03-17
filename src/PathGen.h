@@ -6,18 +6,12 @@ class PathGen {
 public:
 	PathGen(Graph& Graph) : graph(Graph) {};
 
-	///<summary>
-	///Sets the destination node - node at which the generated path should end.
-	///</summary>
+	//Sets the destination node - node at which the generated path should end.
 	bool setDestID(int ID);
 	int getDestID();
 
-	///<summary>
-	///Returns a randomly generated path from a given node to destination node.
-	///</summary>
-	///<remarks>
-	///Returns a vector. First element is the starting node, last is the destination node.
-	///</remarks>
+	//Returns a randomly generated path from a given node to destination node.
+	//  Returns a vector. First element is the starting node, last is the destination node.
 	vector<int> genRandomPath(int startID, float maxLength);
 
 	void setOnStepCB(void(*CB)(vector<int>));
@@ -29,29 +23,14 @@ private:
 
 	void(*onStep)(vector<int>);
 
-	//Path generation helper funcs
-	///<summary>
-	///Calculates each node's (shortest) distance to the destination node
-	///</summary>
+	////Path generation helper funcs
+
+	//Calculates each node's (shortest) distance to the destination node
 	void calculateDistances();
 
-	///<summary>
-	///Defines the rules for valid road candidates.
-	///</summary>
+	//Defines the rules for valid road candidates.
 	bool isRoadCandidate(Node* node, float maxDist);
 
-	void resetDistances();
-
-	///<summary>
-	///Sets the invalidated flag for nodes whose distance may not be valid anymore
-	///</summary>
-	///<param name="threshold">
-	///All nodes with distance greater or equal to this value will have their distances invalidated.
-	///</param>
-	void invalidateNodes(float threshold);
-
-	///<summary>
-	///Recalculates the distance of a node
-	///</summary>
+	//Recalculates the distance of a node
 	void updateDistance(Node* node);
 };

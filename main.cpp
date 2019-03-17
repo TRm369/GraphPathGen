@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
 	
 	//g.setOnStepCB(&onStep);
 	vector<int> path;
-	int iters = 5;
+	int iters = 100;
 	clock_t total = 0;
 	clock_t thisRun;
 	for (int i = 0; i < iters; i++) {

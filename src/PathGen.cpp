@@ -8,9 +8,9 @@ void PathGen::calculateDistances() {
 	if (destID == -1)
 		return;
 
-	graph.nodes[destID]->distance = 0.0f;
-	CircQueue<Node*> toExpand(graph.nodeCount);
-	toExpand.push(graph.nodes[destID]);
+	graph[destID]->distance = 0.0f;
+	CircQueue<Node*> toExpand(graph.maxSize());
+	toExpand.push(graph[destID]);
 
 	Node* currNode;
 	while (toExpand.size() > 0) {
@@ -52,20 +52,6 @@ bool PathGen::isRoadCandidate(Node* node, float maxDist) {
 	return true;
 }
 
-void PathGen::resetDistances() {
-	for (int i = 0; i < graph.initdNodes; i++) {
-		graph.nodes[i]->distance = REALLY_HIGH_NUMBER;
-	}
-}
-
-void PathGen::invalidateNodes(float threshold) {
-	for (int i = 0; i < graph.initdNodes; i++) {
-		if (graph.nodes[i]->distance >= threshold) {
-			graph.nodes[i]->flags |= FLAG_DIST_INVALID;
-		}
-	}
-}
-
 /* updateDistance
 Recalculates the distance of a node to the destination node.
 Basically an A* with a few tweeks:
@@ -74,17 +60,15 @@ Node objects themselves are used to store some of the information regarding sear
 */
 void PathGen::updateDistance(Node* node) {
 	//Reset node flags
-	for (int i = 0; i < graph.initdNodes; i++) {
-		graph.nodes[i]->flags &= ~FLAG_QUEUED;
-	}
+	graph.clearFlags(FLAG_QUEUED);
 
 	//List of nodes to expand and their distances to the node whose distance is being calculated
-	FILOcontainer<pair<Node*, float>> toExpand(graph.nodeCount);
+	FILOcontainer<pair<Node*, float>> toExpand(graph.size());
 	toExpand.push_back(pair<Node*, float>(node, 0.0f));
 	node->flags |= FLAG_QUEUED;
 
 	float bestPathLength = REALLY_HIGH_NUMBER;
-	FILOcontainer<pair<Node*, float>> bestPath(graph.nodeCount); //TODO: Mem optimalization?
+	FILOcontainer<pair<Node*, float>> bestPath(graph.size()); //TODO: Mem optimalization?
 
 	float lowestHeuristic = REALLY_HIGH_NUMBER;
 	int lowestHeuristicIndex = -1;
@@ -142,7 +126,7 @@ void PathGen::updateDistance(Node* node) {
 }
 
 vector<int> PathGen::genRandomPath(int startID, float maxLength) {
-	if (startID < 0 || startID >= graph.initdNodes)
+	if (startID < 0 || startID >= graph.size())
 		return vector<int>();
 	int roadID = 1;
 
@@ -151,11 +135,11 @@ vector<int> PathGen::genRandomPath(int startID, float maxLength) {
 
 	//Path variables
 	vector<int> path{ startID };
-	Node* currNode = graph.nodes[startID];
+	Node* currNode = graph[startID];
 	float lengthLeft = maxLength;
 
 	//Valid nodes
-	Node** validNodes = new Node*[graph.maxOutEdges];
+	Node** validNodes = new Node*[graph.maxOutEdges()];
 	int validNodesCount = 0;
 
 	calculateDistances();
@@ -191,9 +175,9 @@ vector<int> PathGen::genRandomPath(int startID, float maxLength) {
 			} else {
 				////Backtrack
 				//Stepback
-				Node* badNode = graph.nodes[path.back()];
+				Node* badNode = graph[path.back()];
 				path.pop_back();
-				currNode = graph.nodes[path.back()];
+				currNode = graph[path.back()];
 				iterCounter--;
 
 				//Revalidate the nodes around the last node (only the ones which were invalidated last step)
@@ -211,7 +195,7 @@ vector<int> PathGen::genRandomPath(int startID, float maxLength) {
 
 				//TODO: OPTIMIZE HERE
 				//Recalculate the distances
-				resetDistances();
+				graph.resetDistances();
 				calculateDistances();
 
 				//Rinse and repeat
@@ -241,7 +225,7 @@ vector<int> PathGen::genRandomPath(int startID, float maxLength) {
 		currNode->roadID = roadID;
 		path.push_back(currNode->ID);
 
-		invalidateNodes(currNode->distance);
+		graph.invalidateNodes(currNode->distance);
 
 		iterCounter++;
 	}
@@ -256,7 +240,7 @@ void PathGen::setOnStepCB(void(*CB)(vector<int>)) {
 }
 
 bool PathGen::setDestID(int ID) {
-	if (ID < 0 || ID >= graph.initdNodes)
+	if (ID < 0 || ID >= graph.size())
 		return false;
 
 	destID = ID;
