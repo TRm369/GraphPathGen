@@ -37,13 +37,13 @@ private:
 template<typename T>
 inline FILOcontainer<T>::FILOcontainer(int Length) {
 	length = Length;
-	arr = (T*)malloc(length * sizeof(T));
+	arr = (T*)new uint8_t[length * sizeof(T)];
 	current = arr - 1;
 }
 
 template<typename T>
 inline FILOcontainer<T>::~FILOcontainer() {
-	free(arr);
+	delete[] arr;
 }
 
 template<typename T>
@@ -68,10 +68,10 @@ inline int FILOcontainer<T>::size() {
 
 template<typename T>
 inline void FILOcontainer<T>::copyFrom(FILOcontainer<T>& other) {
-	free(arr);
+	delete[] arr;
 
 	length = other.length;
-	arr = (T*)malloc(length * sizeof(T));
+	arr = (T*)new uint8_t[length * sizeof(T)];
 	memcpy(arr, other.arr, other.size() * sizeof(T));
 	current = arr + (other.current - other.arr);
 }

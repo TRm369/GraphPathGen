@@ -19,6 +19,30 @@ Node::Node(edgeCount_t inCount, edgeCount_t outCount) {
 	assignedOnIter -= 1; //Overflow to the max val
 }
 
+void Node::init(edgeCount_t inCount, edgeCount_t outCount) {
+	flags = 0;
+	distance = REALLY_HIGH_NUMBER;
+	incomingCount = 0;
+	outgoingCount = 0;
+
+	incoming = new Node*[inCount];
+	incomingWeight = new float[inCount];
+	outgoing = new Node*[outCount];
+	outgoingWeight = new float[outCount];
+	for (int i = 0; i < inCount; i++) {
+		incoming[i] = nullptr;
+		incomingWeight[i] = -1.0f;
+	}
+	for (int i = 0; i < outCount; i++) {
+		outgoing[i] = nullptr;
+		outgoingWeight[i] = -1.0f;
+	}
+
+	roadID = ROAD_EMPTY;
+	assignedOnIter = 0;
+	assignedOnIter -= 1; //Overflow to the max val
+}
+
 Node::~Node() {
 	delete[] incoming;
 	delete[] incomingWeight;

@@ -52,6 +52,7 @@ void onStep(vector<int> path) {
 }
 
 int main(int argc, char** argv) {
+	cout << g.continuousMemBlock() << endl;
 	//Log::createLogFile("log.log", false);
 	createSquare(SIZE,g);
 
@@ -60,7 +61,7 @@ int main(int argc, char** argv) {
 	
 	//g.setOnStepCB(&onStep);
 	vector<int> path;
-	int iters = 100;
+	int iters = 1;
 	clock_t total = 0;
 	clock_t thisRun;
 	for (int i = 0; i < iters; i++) {

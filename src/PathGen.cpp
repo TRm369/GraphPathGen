@@ -9,7 +9,7 @@ void PathGen::calculateDistances() {
 		return;
 
 	graph[destID]->distance = 0.0f;
-	CircQueue<Node*> toExpand(graph.maxSize());
+	CircQueue<Node*> toExpand(graph.capacity());
 	toExpand.push(graph[destID]);
 
 	Node* currNode;

@@ -5,7 +5,7 @@
 
 class Graph {
 public:
-	Graph(int nodeCount);
+	Graph(int nodeCapacity);
 	~Graph();
 
 	////Graph construction
@@ -48,13 +48,19 @@ public:
 	////Container functions
 	
 	int size();
-	int maxSize();
+	int capacity();
+	bool continuousMemBlock();
 	Node* operator[](int index);
 
 protected:
+	//Memory block to store all nodes
+	bool storedInBlock;
+	uint8_t* memBlock;
+	size_t memBlockSize;
+
 	//Array of pointers to all nodes
 	Node** nodes;
-	int nodeCount;
+	int nodeCapacity;
 
 	//Initialized node count
 	int initdNodes;

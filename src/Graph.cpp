@@ -1,8 +1,18 @@
 #include "Graph.h"
 
-Graph::Graph(int NodeCount) {
-	nodes = new Node*[NodeCount];
-	nodeCount = NodeCount;
+Graph::Graph(int NodeCapacity) {
+	memBlockSize = NodeCapacity * sizeof(Node);
+
+	//Try to allocate memory for all the nodes in one block. If this isn't possible, each node will be allocated separately on demand.
+	try {
+		memBlock = new uint8_t[memBlockSize];
+		storedInBlock = true;
+	} catch (exception e) {
+		storedInBlock = false;
+	}
+
+	nodes = new Node*[NodeCapacity];
+	nodeCapacity = NodeCapacity;
 	initdNodes = 0;
 }
 
@@ -11,13 +21,22 @@ Graph::~Graph() {
 		delete nodes[i];
 	}
 	delete[] nodes;
+
+	if (storedInBlock) {
+		delete[] memBlock;
+	}
 }
 
 int Graph::initNewNode(edgeCount_t edgeInMaxCount, edgeCount_t edgeOutMaxCount) {
-	if (initdNodes == nodeCount)
+	if (initdNodes == nodeCapacity)
 		return -1;
 
-	nodes[initdNodes] = new Node(edgeInMaxCount, edgeOutMaxCount);
+	if (storedInBlock) {
+		nodes[initdNodes] = (Node*)(memBlock + initdNodes * sizeof(Node));//(Node*)(memBlock) + initdNodes;
+		nodes[initdNodes]->init(edgeInMaxCount, edgeOutMaxCount);
+	} else {
+		nodes[initdNodes] = new Node(edgeInMaxCount, edgeOutMaxCount);
+	}
 	nodes[initdNodes]->ID = initdNodes;
 	if (_maxOutEdges < edgeOutMaxCount)
 		_maxOutEdges = edgeOutMaxCount;
@@ -98,8 +117,18 @@ void Graph::setFlags(flags_t mask) {
 
 void Graph::clearFlags(flags_t mask) {
 	flags_t invMask = ~mask;
-	for (int i = 0; i < initdNodes; i++) {
-		nodes[i]->flags &= invMask;
+	flags_t temp;
+	Node** curr = nodes;
+	Node** end = nodes + initdNodes;
+
+	//for (int i = 0; i < initdNodes; i++) {
+	while (curr < end) {
+		Node& node = **curr;
+		temp = node.flags;
+		temp &= invMask;
+		node.flags = temp;
+		curr++;
+		//nodes[i]->flags &= invMask;
 	}
 }
 
@@ -107,8 +136,12 @@ int Graph::size() {
 	return initdNodes;
 }
 
-int Graph::maxSize() {
-	return nodeCount;
+int Graph::capacity() {
+	return nodeCapacity;
+}
+
+bool Graph::continuousMemBlock() {
+	return storedInBlock;
 }
 
 Node* Graph::operator[](int index) {

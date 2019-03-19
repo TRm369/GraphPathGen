@@ -31,6 +31,8 @@ BIT | DESCRIPTION
 class Node {
 public:
 	Node(edgeCount_t inCount, edgeCount_t outCount);
+	//Can be used to initialize default values instead of constructor. TODO: Doesn't seem too elegant. Change (override new?)
+	void init(edgeCount_t inCount, edgeCount_t outCount);
 	~Node();
 
 	ID_t ID;
