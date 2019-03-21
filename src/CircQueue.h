@@ -16,6 +16,7 @@ public:
 	T pop();
 	T peek();
 	int size();
+	void clear();
 
 protected:
 	int length;
@@ -64,4 +65,10 @@ template<typename T>
 inline int CircQueue<T>::size() {
 	int size = back_ptr - front_ptr + 1;
 	return size < 0 ? size+length : size;
+}
+
+template<typename T>
+inline void CircQueue<T>::clear() {
+	front_ptr = circ;
+	back_ptr = circ - 1;
 }

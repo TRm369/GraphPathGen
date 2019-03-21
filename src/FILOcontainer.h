@@ -24,6 +24,7 @@ public:
 	T back();
 	int size();
 	void copyFrom(FILOcontainer<T>& other);
+	void clear();
 
 	T operator [](int i);
 
@@ -37,6 +38,13 @@ private:
 template<typename T>
 inline FILOcontainer<T>::FILOcontainer(int Length) {
 	length = Length;
+
+	if (Length == 0) {
+		arr = nullptr;
+		current = nullptr;
+		return;
+	}
+
 	arr = (T*)new uint8_t[length * sizeof(T)];
 	current = arr - 1;
 }
@@ -68,12 +76,21 @@ inline int FILOcontainer<T>::size() {
 
 template<typename T>
 inline void FILOcontainer<T>::copyFrom(FILOcontainer<T>& other) {
-	delete[] arr;
+	if (length == other.length) {
+		memcpy(arr, other.arr, other.size() * sizeof(T));
+		current = arr + (other.current - other.arr);
+	} else {
+		delete[] arr;
+		length = other.length;
+		arr = (T*)new uint8_t[length * sizeof(T)];
+		memcpy(arr, other.arr, other.size() * sizeof(T));
+		current = arr + (other.current - other.arr);
+	}
+}
 
-	length = other.length;
-	arr = (T*)new uint8_t[length * sizeof(T)];
-	memcpy(arr, other.arr, other.size() * sizeof(T));
-	current = arr + (other.current - other.arr);
+template<typename T>
+inline void FILOcontainer<T>::clear() {
+	current = arr-1;
 }
 
 template<typename T>

@@ -17,14 +17,15 @@ Graph::Graph(int NodeCapacity) {
 }
 
 Graph::~Graph() {
-	for (int i = 0; i < initdNodes; i++) {
-		delete nodes[i];
-	}
-	delete[] nodes;
-
 	if (storedInBlock) {
 		delete[] memBlock;
+	} else {
+		for (int i = 0; i < initdNodes; i++) {
+			delete nodes[i];
+		}
 	}
+
+	delete[] nodes;
 }
 
 int Graph::initNewNode(edgeCount_t edgeInMaxCount, edgeCount_t edgeOutMaxCount) {
@@ -117,18 +118,22 @@ void Graph::setFlags(flags_t mask) {
 
 void Graph::clearFlags(flags_t mask) {
 	flags_t invMask = ~mask;
-	flags_t temp;
-	Node** curr = nodes;
-	Node** end = nodes + initdNodes;
 
-	//for (int i = 0; i < initdNodes; i++) {
-	while (curr < end) {
-		Node& node = **curr;
-		temp = node.flags;
-		temp &= invMask;
-		node.flags = temp;
-		curr++;
-		//nodes[i]->flags &= invMask;
+	if (storedInBlock) {
+		//Use the fact that Nodes are stored in a continuous to speed-up the mem access
+		uint8_t* flagsPtr = &(nodes[0]->flags);
+		uint8_t* endPtr = &(nodes[initdNodes - 1]->flags);
+
+		/*for (; flagsPtr <= endPtr; flagsPtr += sizeof(Node)) {
+			*(flags_t*)flagsPtr &= invMask;
+		}*/
+		for (int i = 0; i < initdNodes; i++) {
+			flagsPtr[i * sizeof(Node)] &= invMask;
+		}
+	} else {
+		for (int i = 0; i < initdNodes; i++) {
+			nodes[i]->flags &= invMask;
+		}
 	}
 }
 

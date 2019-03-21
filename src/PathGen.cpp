@@ -1,8 +1,10 @@
 #include "PathGen.h"
-#include "CircQueue.h"
-#include "FILOcontainer.h"
 #include "Log.h"
 #include <ctime> //seed for rng
+
+PathGen::PathGen(Graph& g) : graph(g), updateDistFILO1(g.size()), updateDistFILO2(g.size()), updateDistCQ1(g.size()) {
+
+}
 
 void PathGen::calculateDistances() {
 	if (destID == -1)
@@ -15,20 +17,19 @@ void PathGen::calculateDistances() {
 	Node* currNode;
 	while (toExpand.size() > 0) {
 		currNode = toExpand.pop();
-		currNode->flags = (uint8_t)0;
+		currNode->flags = (flags_t)0;
 
 		for (int i = 0; i < currNode->outgoingCount; i++) {
 			Node* other = currNode->outgoing[i];
 			if (other->roadID == ROAD_INVALID) {
-				//NOTE: Debating whether to just skip it or set it to REALLY_HIGH_NUMBER
 				continue;
 			}
 			float temp = currNode->distance + currNode->outgoingWeight[i];
 			if (other->distance > temp) {
 				other->distance = temp;
-				if ((other->flags & FLAG_QUEUED) == (uint8_t)0) {
+				if ((other->flags & FLAG_QUEUED) == (flags_t)0) {
 					toExpand.push(currNode->outgoing[i]);
-					(other)->flags |= (uint8_t)FLAG_QUEUED;
+					(other)->flags |= (flags_t)FLAG_QUEUED;
 				}
 			}
 		}
@@ -57,18 +58,26 @@ Recalculates the distance of a node to the destination node.
 Basically an A* with a few tweeks:
 Branch ends with any node with valid distance which is then added to the distance of the nodes in the branch
 Node objects themselves are used to store some of the information regarding search progress (like whether the node has been qequed)
+
+The references to updateDist... are used instead of directly using the objects to improve readablity. Other options is #define.
+//TODO: test ref vs direct speed
 */
 void PathGen::updateDistance(Node* node) {
-	//Reset node flags
-	graph.clearFlags(FLAG_QUEUED);
+	//Brute-force clearing flags on all nodes is EXPENSIVE AS HELL. The clearing of a flag can happen something like initdNodes^2 times. THAT'S A FUCKING LOT!!!
+	//Keep a list of nodes which need their FLAG_QUEUED cleared.
+	CircQueue<flags_t*>& resetFlags = updateDistCQ1;
+	resetFlags.clear();
 
 	//List of nodes to expand and their distances to the node whose distance is being calculated
-	FILOcontainer<pair<Node*, float>> toExpand(graph.size());
+	FILOcontainer<pair<Node*, float>>& toExpand = updateDistFILO1;
+	toExpand.clear();
 	toExpand.push_back(pair<Node*, float>(node, 0.0f));
 	node->flags |= FLAG_QUEUED;
+	resetFlags.push(&(node->flags));
 
 	float bestPathLength = REALLY_HIGH_NUMBER;
-	FILOcontainer<pair<Node*, float>> bestPath(graph.size()); //TODO: Mem optimalization?
+	FILOcontainer<pair<Node*, float>>& bestPath = updateDistFILO2; //TODO: Mem optimalization?
+	bestPath.clear();
 
 	float lowestHeuristic = REALLY_HIGH_NUMBER;
 	int lowestHeuristicIndex = -1;
@@ -91,7 +100,7 @@ void PathGen::updateDistance(Node* node) {
 			if (current.first->outgoing[i] == nullptr)
 				break;
 
-			//Here we also disallow going through already placed roads
+			//Here we also disallow going through already placed roads and invalid nodes
 			if (((current.first->outgoing[i]->flags & FLAG_QUEUED) == 0) && current.first->outgoing[i]->roadID == ROAD_EMPTY) {
 				if (current.first->outgoing[i]->distance < lowestHeuristic) {
 					lowestHeuristic = current.first->outgoing[i]->distance;
@@ -116,12 +125,19 @@ void PathGen::updateDistance(Node* node) {
 		//Expand the neighbor
 		toExpand.push_back(pair<Node*, float>(current.first->outgoing[lowestHeuristicIndex], current.second + current.first->outgoingWeight[lowestHeuristicIndex]));
 		current.first->outgoing[lowestHeuristicIndex]->flags |= FLAG_QUEUED;
+		resetFlags.push(&(current.first->outgoing[lowestHeuristicIndex]->flags));
 	}
 
 	// Update the distances along the best path
 	for (int i = 0; i < bestPath.size(); i++) {
 		bestPath[i].first->distance = bestPathLength - bestPath[i].second;
 		bestPath[i].first->flags &= ~FLAG_DIST_INVALID;
+	}
+
+	//Reset the flags
+	flags_t invMask = ~FLAG_QUEUED;
+	while (resetFlags.size() > 0) {
+		*(resetFlags.pop()) &= invMask;
 	}
 }
 
@@ -180,23 +196,21 @@ vector<int> PathGen::genRandomPath(int startID, float maxLength) {
 				currNode = graph[path.back()];
 				iterCounter--;
 
-				//Revalidate the nodes around the last node (only the ones which were invalidated last step)
+				//Revalidate the nodes around the last node (only the ones which were invalidated last step), but flag their distance as invalid
 				for (int i = 0; i < currNode->outgoingCount; i++) {
 					if (currNode->outgoing[i] == nullptr)
 						break;
 					if (currNode->outgoing[i]->assignedOnIter == iterCounter) {
 						currNode->outgoing[i]->resetRoadID();
 					}
+
+					//NOTE: Possibly invalidateNodes() might be necessary
+					currNode->outgoing[i]->flags |= FLAG_DIST_INVALID;
 				}
 
 				//Invalidate the node from which we're backtracking (because it doesn't lead to any valid path)
 				//Using iterCounter-1 to allow further backtracking
 				badNode->setRoadID(ROAD_INVALID, iterCounter - 1);
-
-				//TODO: OPTIMIZE HERE
-				//Recalculate the distances
-				graph.resetDistances();
-				calculateDistances();
 
 				//Rinse and repeat
 				continue;
@@ -208,6 +222,7 @@ vector<int> PathGen::genRandomPath(int startID, float maxLength) {
 			if (currNode->outgoing[i] == nullptr)
 				break;
 			currNode->outgoing[i]->setRoadID(ROAD_INVALID, iterCounter);
+			currNode->outgoing[i]->flags |= FLAG_DIST_INVALID;
 		}
 
 		////Pick one valid candidate at random and make a step

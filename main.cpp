@@ -42,16 +42,21 @@ RectGDIrenderer r(SIZE, SIZE);
 wchar_t buffer[40];
 int fileI = 0;
 
-void onStep(vector<int> path) {
+/*void onStep(vector<int> path) {
 	r.createGrid();
 	r.drawPath(path, Color::Yellow);
 	r.addOverlay(g);
 	swprintf_s(buffer,40, L"D:\\data\\GPG\\OUT%04d.png", fileI);
 	r.saveImage(buffer);
 	fileI++;
-}
+}*/
 
 int main(int argc, char** argv) {
+
+
+
+
+
 	cout << g.continuousMemBlock() << endl;
 	//Log::createLogFile("log.log", false);
 	createSquare(SIZE,g);
@@ -76,13 +81,12 @@ int main(int argc, char** argv) {
 	}
 	
 	cout << double(total) / CLOCKS_PER_SEC / iters * 1000 << " ms per iteration" << endl;
-	Log::logString("Average time per iteration (ms):");
-	Log::logFloat(float(total) / CLOCKS_PER_SEC / iters * 1000);
-	/*RectGDIrenderer r(SIZE, SIZE);
+	//Log::logString("Average time per iteration (ms):");
+	//Log::logFloat(float(total) / CLOCKS_PER_SEC / iters * 1000);
 	r.createGrid();
 	r.drawPath(path, Color::Yellow);
 	r.addOverlay(g);
 	r.saveImage(L"D:\\OUT.png");
-	cin.ignore();*/
+	cin.ignore();
 	return 0;
 }

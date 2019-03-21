@@ -1,10 +1,12 @@
 #pragma once
 #include "../stdafx.h"
 #include "Graph.h"
+#include "FILOcontainer.h"
+#include "CircQueue.h"
 
 class PathGen {
 public:
-	PathGen(Graph& Graph) : graph(Graph) {};
+	PathGen(Graph& Graph);
 
 	//Sets the destination node - node at which the generated path should end.
 	bool setDestID(int ID);
@@ -22,6 +24,12 @@ private:
 	int destID = -1;
 
 	void(*onStep)(vector<int>);
+
+	////To reduce reallocating memory, containers for some functions are kept here, allocated once and reused
+	//UpdateDist
+	FILOcontainer<pair<Node*, float>> updateDistFILO1;
+	FILOcontainer<pair<Node*, float>> updateDistFILO2;
+	CircQueue<flags_t*> updateDistCQ1;
 
 	////Path generation helper funcs
 
