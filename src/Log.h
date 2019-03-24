@@ -1,6 +1,6 @@
 #pragma once
 #include "../stdafx.h"
-#include <time.h>
+#include "Utils.h"
 #include <fstream>
 
 class Log {
@@ -16,9 +16,6 @@ protected:
 	static Log* instance;
 
 	static bool timeEnable;
-	static time_t rawtime;
-	static struct tm* timeinfo;
-	static char buffer[32];
 
 	Log(const char* fileName);
 	ofstream file;

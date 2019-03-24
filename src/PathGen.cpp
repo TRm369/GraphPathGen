@@ -19,16 +19,16 @@ void PathGen::calculateDistances() {
 		currNode = toExpand.pop();
 		currNode->flags = (flags_t)0;
 
-		for (int i = 0; i < currNode->outgoingCount; i++) {
-			Node* other = currNode->outgoing[i];
+		for (int i = 0; i < currNode->incomingCount; i++) {
+			Node* other = currNode->incoming[i];
 			if (other->roadID == ROAD_INVALID) {
 				continue;
 			}
-			float temp = currNode->distance + currNode->outgoingWeight[i];
+			float temp = currNode->distance + currNode->incomingWeight[i];
 			if (other->distance > temp) {
 				other->distance = temp;
 				if ((other->flags & FLAG_QUEUED) == (flags_t)0) {
-					toExpand.push(currNode->outgoing[i]);
+					toExpand.push(currNode->incoming[i]);
 					(other)->flags |= (flags_t)FLAG_QUEUED;
 				}
 			}

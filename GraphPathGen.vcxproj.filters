@@ -48,6 +48,18 @@
     <ClInclude Include="src\FILOcontainer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="tests\GPGtester.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tests\Test.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tests\TimeTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -72,6 +84,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\PathGen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\GPGtester.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\Test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\TimeTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

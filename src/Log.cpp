@@ -5,9 +5,6 @@
 
 Log* Log::instance;
 bool Log::timeEnable;
-time_t Log::rawtime;
-struct tm* Log::timeinfo = new tm;
-char Log::buffer[32];
 
 void Log::createLogFile(const char* fileName, bool timeEnabled) {
 	if (instance != nullptr) {
@@ -54,7 +51,6 @@ Log::~Log() {
 		printTime();
 	file << "Closing log file.";
 	file.close();
-	delete timeinfo;
 }
 
 Log::Log(const char* fileName) {
@@ -69,8 +65,5 @@ void Log::defaultCreate() {
 }
 
 void Log::printTime() {
-	time(&rawtime);
-	localtime_s(timeinfo, &rawtime);
-	strftime(buffer, 32, "[%T] ", timeinfo);
-	instance->file << buffer;
+	instance->file << Utils::getTimeStr();
 }

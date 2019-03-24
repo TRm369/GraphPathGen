@@ -124,9 +124,6 @@ void Graph::clearFlags(flags_t mask) {
 		uint8_t* flagsPtr = &(nodes[0]->flags);
 		uint8_t* endPtr = &(nodes[initdNodes - 1]->flags);
 
-		/*for (; flagsPtr <= endPtr; flagsPtr += sizeof(Node)) {
-			*(flags_t*)flagsPtr &= invMask;
-		}*/
 		for (int i = 0; i < initdNodes; i++) {
 			flagsPtr[i * sizeof(Node)] &= invMask;
 		}

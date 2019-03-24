@@ -156,8 +156,12 @@
     <ClInclude Include="src\Node.h" />
     <ClInclude Include="src\PathGen.h" />
     <ClInclude Include="src\RectGDIrenderer.h" />
+    <ClInclude Include="src\Utils.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="tests\GPGtester.h" />
+    <ClInclude Include="tests\Test.h" />
+    <ClInclude Include="tests\TimeTest.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -167,12 +171,16 @@
     <ClCompile Include="src\Node.cpp" />
     <ClCompile Include="src\PathGen.cpp" />
     <ClCompile Include="src\RectGDIrenderer.cpp" />
+    <ClCompile Include="src\Utils.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="tests\GPGtester.cpp" />
+    <ClCompile Include="tests\Test.cpp" />
+    <ClCompile Include="tests\TimeTest.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
